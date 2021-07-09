@@ -343,7 +343,7 @@ func (p *LocalLVMProvisioner) createHelperPod(action ActionType, vgOperationArgs
 
 	hostPathType := v1.HostPathDirectoryOrCreate
 	privilegedTrue := true
-	uid, err := uuid.NewV4()
+	uid := uuid.NewV4()
 	helperPod := &v1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: string(action) + "-" + name + "-" + uid.String()[:8],

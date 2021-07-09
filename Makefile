@@ -18,8 +18,6 @@ trash-keep: .dapper
 
 deps: trash
 
-build: deps
-
 package: build
 
 .DEFAULT_GOAL := package
