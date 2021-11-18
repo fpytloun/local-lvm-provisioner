@@ -347,6 +347,9 @@ func (p *LocalLVMProvisioner) createHelperPod(action ActionType, vgOperationArgs
 	helperPod := &v1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: string(action) + "-" + name + "-" + uid.String()[:8],
+			Labels: map[string]string{
+				"app": "local-lvm-provisioner-helper",
+			},
 		},
 		Spec: v1.PodSpec{
 			RestartPolicy: v1.RestartPolicyNever,
@@ -355,6 +358,24 @@ func (p *LocalLVMProvisioner) createHelperPod(action ActionType, vgOperationArgs
 			Tolerations: []v1.Toleration{
 				{
 					Operator: v1.TolerationOpExists,
+				},
+			},
+			Affinity: &v1.Affinity{
+				PodAntiAffinity: &v1.PodAntiAffinity{
+					RequiredDuringSchedulingIgnoredDuringExecution: []v1.PodAffinityTerm{
+						{
+							LabelSelector: &metav1.LabelSelector{
+								MatchExpressions: []metav1.LabelSelectorRequirement{
+									{
+										Key:      "app",
+										Operator: metav1.LabelSelectorOpIn,
+										Values:   []string{"local-lvm-provisioner-helper"},
+									},
+								},
+							},
+							TopologyKey: "node",
+						},
+					},
 				},
 			},
 			Containers: []v1.Container{
